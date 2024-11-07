@@ -2,9 +2,7 @@
 requires = ["setuptools>=45", "setuptools_scm>=6.2"]
 build-backend = "setuptools.build_meta"
 
-[
-project
-]
+[project]
 name = "frontmatter-check"
 description = "cli to check for metadata in frontmatter. Designed to work standalone or with precommit"
 readme = "README.md"
