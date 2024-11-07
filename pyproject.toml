@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "frontmatter-check"
+description = "cli to check for metadata in frontmatter. Designed to work standalone or with precommit"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "typer",
+    "python-frontmatter",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+]
+
+[project.scripts]
+frontmatter-check = "frontmatter_check.cli:app"
