@@ -16,6 +16,7 @@ classifiers = [
 dependencies = [
     "typer",
     "python-frontmatter",
+    "pyyaml",
 ]
 dynamic = ["version"]
 
