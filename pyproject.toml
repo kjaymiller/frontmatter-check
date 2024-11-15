@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "frontmatter-check"
 description = "cli to check for metadata in frontmatter. Designed to work standalone or with precommit"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 license = {text = "MIT"}
 classifiers = [
     "Programming Language :: Python :: 3",

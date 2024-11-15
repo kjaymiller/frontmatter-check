@@ -57,7 +57,9 @@ class FrontmatterValidator:
         errors = []
 
         for name, rule in self.ruleset.items():
-            print(name, rule, post)
+            print(f"{name=}, {rule=}")
+            print(f"{post.metadata=}")
+
             if name not in post.metadata.keys():
                 errors.append(name)
 
