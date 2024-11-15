@@ -28,3 +28,8 @@ dev = [
 
 [project.scripts]
 frontmatter-check = "frontmatter_check.cli:app"
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "src"
+]
