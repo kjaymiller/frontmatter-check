@@ -42,8 +42,8 @@ def test_frontmattervalidator_init(fake_dir, base_json):
 
 good_frontmatter = """
 ---
-'name': Miles Morales
-___
+name: Miles Morales
+---
 
 This is Spiderman.
 """
