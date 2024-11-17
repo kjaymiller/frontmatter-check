@@ -3,7 +3,6 @@ import pathlib
 import frontmatter
 from rich.console import Console
 from typer import Typer, Option, Exit
-import typer
 import typing
 from typing_extensions import Annotated
 
@@ -30,6 +29,10 @@ def check_file(
 
     for target_file in target_files:
         fm_file = frontmatter.loads(target_file.read_text())
+
+        if not fm_file.metadata:
+            continue
+
         validates, errors = validator.validates(post=fm_file)
 
         if not validates:

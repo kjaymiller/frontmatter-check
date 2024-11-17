@@ -4,3 +4,4 @@
   entry: frontmatter-check
   language: python
   stages: [pre-commit, pre-push, manual]
+  types: [markdown]
