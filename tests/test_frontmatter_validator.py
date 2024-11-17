@@ -17,11 +17,6 @@ base_json = st.fixed_dictionaries(
 )
 
 
-@pytest.fixture(scope="session")
-def fake_dir(tmp_path_factory):
-    return tmp_path_factory.mktemp("test_dir")
-
-
 @given(base_json)
 def test_frontmattervalidator_init(fake_dir, base_json):
     yaml_config = yaml.dump(base_json)
@@ -40,35 +35,23 @@ def test_frontmattervalidator_init(fake_dir, base_json):
     # TODO: Add test for if there is a ruleset that it has a warning that matches the warning
 
 
-good_frontmatter = """
----
-name: Miles Morales
----
-
-This is Spiderman.
-"""
-
-bad_frontmatter = """
----
-age: 16
-___
-
-This is Spiderman.
-"""
-
-
 @pytest.mark.parametrize(
-    "frontmatter_text, validation, error",
+    "rule, validation, error",
     (
-        (good_frontmatter, True, []),
-        (bad_frontmatter, False, ["name"]),
+        ({"name": {"default": None, "warning": False}}, True, []),
+        ({"age": {"default": None, "warning": False}}, False, ["age"]),
     ),
 )
-def test_validation_possibilities(frontmatter_text: str, validation: bool, error: list):
+def test_validation_possibilities(
+    example_frontmatter: str,
+    rule: dict[str, dict[str, None | bool]],
+    validation: bool,
+    error: list,
+):
     """Tests that frontmatter is parsed correctly"""
     test_validator = frontmatter_validator.FrontmatterValidator()
-    test_validator.ruleset = {"name": {"default": None, "warning": False}}
-    assert test_validator.validates(frontmatter.loads(frontmatter_text)) == (
+    test_validator.ruleset = rule
+    assert test_validator.validates(frontmatter.loads(example_frontmatter)) == (
         validation,
         error,
     )

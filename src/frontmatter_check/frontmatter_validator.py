@@ -2,7 +2,6 @@
 The FrontmatterValidator is the object responsible for checking a passed in frontmatter `Post` object
 """
 
-import logging
 import pathlib
 from collections import defaultdict
 from typing import Any, TypedDict
@@ -25,7 +24,6 @@ class FrontmatterValidator:
     Attributes:
         ruleset: dictionary of rules to check against
         overwrite: should the file overwrite
-
     """
 
     ruleset: dict[str, RULESET_FROM_DICT_TYPE] = defaultdict()
@@ -57,9 +55,6 @@ class FrontmatterValidator:
         errors = []
 
         for name, rule in self.ruleset.items():
-            print(f"{name=}, {rule=}")
-            print(f"{post.metadata=}")
-
             if name not in post.metadata.keys():
                 errors.append(name)
 
