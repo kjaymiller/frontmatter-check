@@ -50,7 +50,7 @@ class FrontmatterValidator:
                 "warning": False,
             }
 
-    def validates(self, post: frontmatter.Post):
+    def validates(self, post: frontmatter.Post) -> tuple[bool, list[str]]:
         validates = True
         errors = []
 
