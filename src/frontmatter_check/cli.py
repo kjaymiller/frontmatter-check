@@ -33,15 +33,22 @@ def check_file(
         if not fm_file.metadata:
             continue
 
-        validates, errors = validator.validates(post=fm_file)
+        results = validator.validates(post=fm_file)
+        ret_code = int(not (results.validates))  # Return 1 for False
 
-        if not validates:
-            ret_code = 1
+        if results.warnings:
+            warning_codes = [
+                f"{target_file} is missing `{warning}`" for warning in results.warnings
+            ]
+            print("WARNINGS: \n".join(warning_codes))
 
-            for error in errors:
-                err_console.print(f"{target_file} is missing the `{error}` value.")
-    if ret_code:
-        raise Exit(code=ret_code)
+        if results.errors:
+            error_codes = [
+                f"{target_file} is missing `{error}`" for error in results.errors
+            ]
+            err_console.print("\n".join(error_codes))
+
+    raise Exit(code=ret_code)
 
 
 if __name__ == "__main__":
