@@ -4,21 +4,16 @@ from frontmatter_check.frontmatter_validator import ValidationLevel
 
 @pytest.mark.parametrize(
     "validation_level_string, validation_level",
-    ("skip", ValidationLevel.SKIP),
-    ("warn", ValidationLevel.WARN),
-    ("error", ValidationLevel.ERROR),
+    (
+        ("skip", ValidationLevel.SKIP),
+        ("warn", ValidationLevel.WARN),
+        ("error", ValidationLevel.ERROR),
+    ),
 )
-def test_validation_level_valid_values():
+def test_validation_level_valid_values(validation_level_string, validation_level):
     """Test that valid string values are correctly converted to enum values"""
-    assert ValidationLevel.from_str
-
-
-def test_validation_level_case_insensitive():
-    """Test that the conversion is case-insensitive"""
-    assert ValidationLevel.from_str("SKIP") == ValidationLevel.SKIP
-    assert ValidationLevel.from_str("Warn") == ValidationLevel.WARN
-    assert ValidationLevel.from_str("ERROR") == ValidationLevel.ERROR
-    assert ValidationLevel.from_str("sKiP") == ValidationLevel.SKIP
+    assert ValidationLevel.from_str(validation_level_string) == validation_level
+    assert ValidationLevel.from_str(validation_level_string.upper()) == validation_level
 
 
 def test_validation_level_invalid_values():
@@ -41,11 +36,11 @@ def test_validation_level_type_comparison():
 
 
 def test_validation_level_none_input():
-    """Test that None input raises ValueError"""
-    with pytest.raises(ValueError) as exc_info:
+    """Test that None input raises Custom AttributeError"""
+    with pytest.raises(AttributeError) as exc_info:
         ValidationLevel.from_str(None)
 
-    assert "object has no attribute 'lower'" in str(exc_info.value)
+    assert "Validation Level cannot be empty" in str(exc_info.value)
 
 
 def test_validation_level_direct_enum_values():
