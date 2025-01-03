@@ -6,13 +6,13 @@ from typer import Typer, Option, Exit, echo
 import typing
 from typing_extensions import Annotated
 
-from .pattern_check import FrontmatterPatternCheck
+from .pattern_check import FrontmatterPatternMatchCheck
 
 app = Typer(no_args_is_help=True)
 err_console = Console(stderr=True)
 
 
-def _check_pattern(pattern_check: FrontmatterPatternCheck, target_file):
+def _check_pattern(pattern_check: FrontmatterPatternMatchCheck, target_file):
     echo(f"Checking File: {target_file}")
     return pattern_check.validates(frontmatter_file=target_file)
 
@@ -35,7 +35,9 @@ def check_files(
 
     ret_code = 0
 
-    pattern_check = FrontmatterPatternCheck.from_yaml_config(config_file=config_file)
+    pattern_check = FrontmatterPatternMatchCheck.from_yaml_config(
+        config_file=config_file
+    )
 
     for target_file in target_files:
         if target_file.is_dir():

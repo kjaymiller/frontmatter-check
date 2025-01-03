@@ -1,3 +1,7 @@
+"""
+Pattern check is used to check against multiple patterns.
+"""
+
 import dataclasses
 import logging
 import pathlib
@@ -64,10 +68,9 @@ class PatternRuleset:
                 {
                     "field_name": "author",
                     "level": "error",
-                    "default": "Jay",
                 },
         ],
-    },
+    }
     """
 
     name: str
@@ -91,7 +94,7 @@ def _check_pattern(pattern_ruleset: PatternRuleset, file_path: pathlib.Path):
     return file_path.full_match(pattern_ruleset.pattern)
 
 
-class FrontmatterPatternCheck:
+class FrontmatterPatternMatchCheck:
     """
     Example PatternSet:
     [
@@ -173,4 +176,4 @@ class FrontmatterPatternCheck:
                 global FRONTMATTER_CHECK_LOGGING_LEVEL
                 FRONTMATTER_CHECK_LOGGING_LEVEL = level
 
-        return FrontmatterPatternCheck(*config["patterns"])
+        return FrontmatterPatternMatchCheck(*config["patterns"])
