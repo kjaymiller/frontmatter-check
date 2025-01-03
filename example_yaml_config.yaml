@@ -5,7 +5,8 @@ settings:
 # Pattern-specific rules
 patterns:
   - name: "Global Defaults"
-    pattern: "**/*.md"
+    pattern: "*.md"
     rules:
       - field_name: title
       - field_name: description
+        is_null: skip

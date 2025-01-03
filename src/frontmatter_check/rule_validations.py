@@ -8,8 +8,17 @@ from logging.handlers import MemoryHandler
 from typing import Any
 
 logger = logging.getLogger("FrontmatterCheck")
+logger.propagate = False
+
 memory_handler = MemoryHandler(capacity=1000)
-memory_handler.setLevel(logging.INFO)
+memory_handler.setLevel(logging.ERROR)
+
+formatter = logging.Formatter("%(levelname)s - %(message)s")
+console = logging.StreamHandler()
+console.setLevel(logging.WARNING)
+console.setFormatter(formatter)
+
+logger.addHandler(console)
 logger.addHandler(memory_handler)
 
 _frontmatter_metadata = dict[str, Any]
@@ -30,7 +39,10 @@ class ValidationRule:
 
         if self.field_name not in frontmatter_metadata:
             fail_message = f"Missing field: '{self.field_name}'"
-            logger.log(self.missing_field_logging_level, fail_message)
+            logger.log(
+                self.missing_field_logging_level,
+                fail_message,
+            )
             return False
 
         return True

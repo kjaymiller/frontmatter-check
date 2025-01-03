@@ -1,8 +1,6 @@
----
-description: yup
----
-
 # Frontmatter Check
+
+![Frontmatter Check Logo](./assets/images/frontmatter-check-logo.jpeg)
 
 <!--toc:start-->
 
@@ -10,19 +8,24 @@ description: yup
   - [Overview](#overview)
   - [The Problem](#the-problem)
   - [Installation](#installation)
-  - [Usage](#usage)
+  - [Using the CLI](#using-the-cli)
     - [Configuration Structure](#configuration-structure)
-    - [Basic Frontmatter Validation](#basic-frontmatter-validation)
+    - [Check your frontmatter files](#check-your-frontmatter-files)
     - [Advanced Field Validation](#advanced-field-validation)
+    - [Matching multiple rules](#matching-multiple-rules)
     - [Frontmatter Check as a Python package](#frontmatter-check-as-a-python-package)
-    - [Frontmatter Check as a cli](#frontmatter-check-as-a-cli)
+      - [1. Import the `FrontmatterValidator` object](#1-import-the-frontmattervalidator-object)
+      - [2. Initialize your `FrontmatterValidator`](#2-initialize-your-frontmattervalidator)
+      - [3. [Optional] Add any additional rules](#3-optional-add-any-additional-rules)
     - [Frontmatter Check with Pre-Commit](#frontmatter-check-with-pre-commit)
+      - [4. Check a frontmatter contained file with `validates`](#4-check-a-frontmatter-contained-file-with-validates)
+    - [Frontmatter Check as a cli](#frontmatter-check-as-a-cli)
   - [Development](#development) - [Code of Conduct](#code-of-conduct) - [Contributing](#contributing) - [Security](#security)
   <!--toc:end-->
 
 ## Overview
 
-This validation system ensures the presence and format of frontmatter fields in your content files. It ensures that required metadata is present.
+It ensures that required metadata is present.
 
 ## The Problem
 
@@ -38,9 +41,9 @@ You can install this package via pip:
 pip install https://git@github.com:kjaymiller/frontmatter-check.git
 ```
 
-## Usage
+## Using the CLI
 
-### Configuration Structure
+The most common usage for this tool would be to use the CLI.
 
 Let's look at a simple markdown document with some frontmatter
 
@@ -52,37 +55,94 @@ title: Hello World
 This is a sample blog post
 ```
 
-### Basic Frontmatter Validation
+### Configuration Structure
 
-The simplest configuration checks for the presence of a required frontmatter field:
+To use Frontmatter Check, you need to pass in a configuration file. This is a yaml file that you can point to directly with your:
+
+The simplest configuration checks is to create a pattern:
 
 ```yaml
-# FRONTMATTER_CHECK_CONFIG.YAML
+# .frontmatter_check.YAML
 
-title:
+# Pattern-specific rules
+patterns:
+  - name: "Global Defaults"
+    pattern: "**/*.md" # match ALL `.md` files
+    rules:
+      - field_name: title
+      - field_name: description
 ```
 
-This configuration ensures that the frontmatter contains a `title` field.
+The `pattern` field will be checked against the file path. Paths are relative to where the CLI is ran.
 
-What if our blog occaisionally has guest posts and we want to make sure that an `author` flag is always included. We can add another entry to our config.
+- `*` wildcard
+- `**/` recursive wildcard
 
-```yaml
-# FRONTMATTER_CHECK_CONFIG.YAML
+The example above will pass for ALL markdown files.
 
-title:
-author:
+### Check your frontmatter files
+
+Test a frontmatter file running the command:
+
+```shell
+frontmatter-check <FILE>
+```
+
+You can also pass a directory in and it will match all the markdown (_.md) and text (_.txt) files. You can modify the pattern to check with `--file_pattern`.
+
+```shell
+frontmatter-check <FOLDER> --file-pattern pages/blog/*.md
+```
+
+You can also be more specific and pass in multiple files
+
+```shell
+frontmatter-check <FILE1> <FILE2> --file-pattern pages/blog/*.md
+```
+
+You can also mix and match Files and Folders.
+
+```shell
+frontmatter-check <FILE1> <FOLDER> <FILE2> --file-pattern pages/blog/*.md
 ```
 
 ### Advanced Field Validation
 
-Fields can have additional properties. The `default` flag that supplies a default value when one is missing. The other value is the `warning` flag that will let you know that something you've mentioned should be included is missing.
+Each rule has two checks:
+
+- `is_missing`: Does the field exist?
+- `is_null`: Is the value of the field `null`
+
+If either of the checks fail **FOR ANY RULE**, the command-line will continue to run but will exit after all tests have run. Failures will result in an exit code of `1`.
+
+You can also change the level of the checks.
+
+If you set the value of a check to `warn`. The Error message will still appear but the check will not affect the exit code.
+
+Setting a check to `skip` will suppress the message and not affect the exit code.
 
 ```yaml
-# FRONTMATTER_CHECK_CONFIG.YAML
-name:
-  default: Jay Miller # Default value if field is missing
-  warning: true # Show warning instead of failing pre-commit
+# .frontmatter_check.YAML
+
+# Pattern-specific rules
+patterns:
+  - name: "Global Defaults"
+    pattern: "**/*.md" # Careful this will hit ALL markdown files
+    rules:
+      - field_name: title
+        is_missing: skip # do not raise an error
+      - field_name: description
+        is_null: warn # show error but do not fail the check
 ```
+
+### Matching multiple rules
+
+You can have as many patterns as you like but rules will run for each matching pattern.
+
+Since Frontmatter Check will test all matching patterns, there is no difference in order.
+
+> [!NOTE]
+> There is a plan to implement a `fail_fast` setting that would make order more important
 
 ### Frontmatter Check as a Python package
 
@@ -114,20 +174,6 @@ validator.ruleset['newrule'] = {
 }
 ```
 
-#### 4. Check a frontmatter contained file with `validates`
-
-`validator` looks for a [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path). While normally frontmatter is often paired with markdown. You can pass any filetype. Files with no frontmatter will be skipped.
-
-### Frontmatter Check as a cli
-
-Frontmatter Uses [typer](https://typer.tiangolo.com) to check files.
-
-You can access the cli with the `frontmatter-check` command. You can pass in as many files to check as arguments and the optional config-file (obeys the same rules as in a [python package](#frontmatter-check-as-a-python-package)).
-
-```shell
-frontmatter-check <FILE1> <FILE2> <etc> --config-file <OPTIONAL_CONFIG_FILE>
-```
-
 You can pass in `frontmatter-check` with no arguments or `frontmatter-check --help` to access the help.
 
 ### Frontmatter Check with Pre-Commit
@@ -144,6 +190,12 @@ repos:
       - id: frontmatter-check
       # - args: [--config-file <OPTIONAL_CONFIG_FILE>]
 ```
+
+#### 4. Check a frontmatter contained file with `validates`
+
+`validator` looks for a [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path). While normally frontmatter is often paired with markdown. You can pass any filetype. Files with no frontmatter will be skipped.
+
+### Frontmatter Check as a cli
 
 ## Development
 
