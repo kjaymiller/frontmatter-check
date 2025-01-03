@@ -38,7 +38,7 @@ We can't do much about the validation but we ensure that you include the frontma
 You can install this package via pip:
 
 ```shell
-pip install https://git@github.com:kjaymiller/frontmatter-check.git
+pip install --pre https://git@github.com:kjaymiller/frontmatter-check.git
 ```
 
 ## Using the CLI
@@ -185,7 +185,7 @@ Add the following to your `.pre_commit_config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/kjaymiller/frontmatter-check
-    rev: "2024.11.3"
+    rev: "2025.1.1a2"
     hooks:
       - id: frontmatter-check
       # - args: [--config-file <OPTIONAL_CONFIG_FILE>]
