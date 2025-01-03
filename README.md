@@ -149,14 +149,26 @@ repos:
 
 ## Frontmatter Check as a Python package
 
+Using this as a package means that you can validate your frontmatter at runtime.
+
 ### Simple rule validation letters
 
-Using this as a package means that you can validate your frontmatter at runtime.
+For checking for a few fields, you can use the `ValidationRule` and the `RulesetValidator`. This is great when the data being checked it pretty consistent.
+
+A single field is identified in a `ValidationRule`.
+
+You can bundle `ValidationRule`s into a `RulesetValidator`. You can then validate your rules using `RulesetValidator.validate(frontmatter_metadata)`.
+
+> [!NOTE]
+> Since you are checking only the metadata of the frontmatter, it is expected that you pass in the metadata and not the file itself.
 
 ```python
 from frontmatter import ValidationRule, RulesetValidator
 
-#TBD
+title = ValidationRule(field_name="title")
+description = ValidationRule(field_name="description")
+
+RulesetValidator(rules=[title, description])
 ```
 
 ### Advances rule validation letters
