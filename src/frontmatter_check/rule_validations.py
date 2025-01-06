@@ -2,24 +2,11 @@
 The FrontmatterValidator is the object responsible for checking a passed in frontmatter `Post` object.
 """
 
-import dataclasses
 import logging
-from logging.handlers import MemoryHandler
+import dataclasses
 from typing import Any
 
-logger = logging.getLogger("FrontmatterCheck")
-logger.propagate = False
-
-memory_handler = MemoryHandler(capacity=1000)
-memory_handler.setLevel(logging.ERROR)
-
-formatter = logging.Formatter("%(levelname)s - %(message)s")
-console = logging.StreamHandler()
-console.setLevel(logging.WARNING)
-console.setFormatter(formatter)
-
-logger.addHandler(console)
-logger.addHandler(memory_handler)
+from .logger import logger, memory_handler
 
 _frontmatter_metadata = dict[str, Any]
 
@@ -29,7 +16,7 @@ class ValidationRule:
     """A Single Validation Rule Configuration"""
 
     field_name: str
-    default: str | None
+    default: str | None = None
     # the `int`s below are due to being able to change your logging level values
     missing_field_logging_level: int = logging.ERROR
     null_value_logging_level: int = logging.ERROR
