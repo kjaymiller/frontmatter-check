@@ -4,13 +4,13 @@
 
 ## Overview
 
-It ensures that required metadata is present.
+It ensures that required metadata is present in your Markdown files.
 
 ## The Problem
 
-[Markdown][markdown] is incredibly flexible (you're reading it now!) and [frontmatter][frontmatter] adds even more flexibility. That said there is no built-in validation and any issues in your configuration can result in websites, docs, and content not appearing as expected.
+[Markdown][markdown] is incredibly flexible (you're reading it now!) and [frontmatter][frontmatter] adds even more flexibility. That said, there is no built-in validation, and any issues in your configuration can result in websites, docs, and content not appearing as expected.
 
-We can't do much about the validation but we ensure that you include the frontmatter metadata that your application expects.
+We can't do much about the validation, but we can ensure that you have included all the frontmatter metadata that your application expects.
 
 ## Installation
 
@@ -24,7 +24,7 @@ pip install --pre https://git@github.com:kjaymiller/frontmatter-check.git
 
 The most common usage for this tool would be to use the CLI.
 
-Let's look at a simple markdown document with some frontmatter
+Let's look at a simple markdown document with some frontmatter.
 
 ```markdown
 ---
@@ -36,9 +36,9 @@ This is a sample blog post
 
 ### Configuration Structure
 
-To use Frontmatter Check, you need to pass in a configuration file. This is a yaml file that you can point to directly with your:
+To use Frontmatter Check, you need to pass in a configuration file. This is a yaml file that you can point to directly with a CLI command.
 
-The simplest configuration checks is to create a pattern:
+The simplest configuration contains a pattern:
 
 ```yaml
 # .frontmatter_check.YAML
@@ -112,7 +112,7 @@ Since Frontmatter Check will test all matching patterns, there is no difference 
 
 #### Calling multiple files
 
-You can also pass a directory in and it will match all the markdown (_.md) and text (_.txt) files. You can modify the pattern to check with `--file_pattern`.
+You can also pass an a directory and it will match all the markdown (_.md) and text (_.txt) files. You can modify the pattern to check with `--file_pattern`.
 
 ```shell
 frontmatter-check pages --file-pattern *.md
@@ -121,7 +121,7 @@ Checking File: pages/sample_markdown_file.md
 ERROR - Missing field: 'description'
 ```
 
-You can also be more specific and pass in multiple files and folders
+You can also be more specific and pass in multiple files and folders:
 
 ```shell
 frontmatter-check pages another_file.md --file-pattern pages/blog/*.md
@@ -179,7 +179,7 @@ from frontmatter_check import  PatternRuleset
 rule_set = PatternRuleset(field_name="title") # you can also pass
 ```
 
-There are parallels between the cli and the Python package (because the CLI uses the packages behind the scenes).
+There are parallels between the CLI and the Python package (because the CLI uses the packages behind the scenes).
 
 This means that you can use the serialized version of your config for patterns and pass it using the `to_dict` classmethod.
 
@@ -219,7 +219,7 @@ from frontmatter_check import FrontmatterPatternMatchCheck
 pattern_check = FrontmatterPatternMatchCheck.from_yaml_config(config_file=YAML_CONFIG_FILE_PATH)
 ```
 
-Check against the pattern.
+This will check against the pattern.
 
 ## Development
 
@@ -229,7 +229,7 @@ By contributing to this project, you agree to abide by the [CODE of CONDUCT](htt
 
 ### Contributing
 
-Please checkout [CONTRIBUTING.md](CONTRIBUTING.md) prior to suggesting contributions.
+Please check out [CONTRIBUTING.md](CONTRIBUTING.md) prior to suggesting contributions.
 
 ### Security
 
