@@ -1,0 +1,12 @@
+# Global configuration options
+settings:
+  level: warn # Default validation level if not specified in rules
+
+# Pattern-specific rules
+patterns:
+  - name: "Global Defaults"
+    pattern: "*.md"
+    rules:
+      - field_name: title
+      - field_name: description
+        is_null: skip

@@ -7,31 +7,20 @@ name = "frontmatter-check"
 description = "cli to check for metadata in frontmatter. Designed to work standalone or with precommit"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = { text = "MIT" }
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
-dependencies = [
-    "typer",
-    "python-frontmatter",
-    "pyyaml",
-]
+dependencies = ["typer", "python-frontmatter", "pyyaml"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-dev = [
-    "hypothesis",
-    "pytest",
-    "pytest-cov",
-]
+dev = ["hypothesis", "pytest", "pytest-cov", "pytest-mock"]
 
 [project.scripts]
 frontmatter-check = "frontmatter_check.cli:app"
 
 [tool.pytest.ini_options]
-pythonpath = [
-    ".",
-    "src",
-]
+pythonpath = [".", "src"]

@@ -1,47 +1,69 @@
 import pathlib
+import logging
 
-import frontmatter
 from rich.console import Console
-from typer import Typer, Option, Exit
+from typer import Typer, Option, Exit, echo
 import typing
 from typing_extensions import Annotated
 
-from .frontmatter_validator import FrontmatterValidator
+from .pattern_check import FrontmatterPatternMatchCheck
 
 app = Typer(no_args_is_help=True)
 err_console = Console(stderr=True)
 
 
+def _check_pattern(pattern_check: FrontmatterPatternMatchCheck, target_file):
+    echo(f"Checking File: {target_file}")
+    return pattern_check.validates(frontmatter_file=target_file)
+
+
 @app.command(
     name="check",
 )
-def check_file(
+def check_files(
     target_files: typing.List[pathlib.Path],
     config_file: Annotated[
         pathlib.Path,
-        Option(help="configuration file to process rules"),
-    ],
+        Option(
+            help="configuration file to process rules",
+            envvar="FRONTMATTER_CHECK_CONFIG_FILE",
+        ),
+    ] = pathlib.Path(".frontmatter_check.yaml"),
+    file_pattern: typing.List[str] = ["*.md", "*.txt"],
 ) -> None:
-    """Check a file for the layout attribute."""
+    """Check files for the layout attribute."""
 
     ret_code = 0
-    validator = FrontmatterValidator(config_file=config_file)
+
+    pattern_check = FrontmatterPatternMatchCheck.from_yaml_config(
+        config_file=config_file
+    )
 
     for target_file in target_files:
-        fm_file = frontmatter.loads(target_file.read_text())
+        if target_file.is_dir():
+            target_files = []
+            for pattern in file_pattern:
+                target_files.extend(list(target_file.glob(pattern)))
+            for _target_file in target_files:
+                try:
+                    check_result = _check_pattern(
+                        pattern_check=pattern_check, target_file=_target_file
+                    )
+                    ret_code = int(not check_result)
+                except ValueError as e:
+                    logging.error(e)
+                    continue
+        else:
+            try:
+                check_result = _check_pattern(
+                    pattern_check=pattern_check, target_file=target_file
+                )
+                ret_code = int(not check_result)
+            except ValueError as e:
+                logging.error(e)
+                continue
 
-        if not fm_file.metadata:
-            continue
-
-        validates, errors = validator.validates(post=fm_file)
-
-        if not validates:
-            ret_code = 1
-
-            for error in errors:
-                err_console.print(f"{target_file} is missing the `{error}` value.")
-    if ret_code:
-        raise Exit(code=ret_code)
+    raise Exit(code=ret_code)
 
 
 if __name__ == "__main__":

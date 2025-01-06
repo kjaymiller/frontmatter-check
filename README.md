@@ -1,44 +1,30 @@
 # Frontmatter Check
 
-<!--toc:start-->
-
-- [Frontmatter Check](#frontmatter-check)
-  - [Overview](#overview)
-  - [The Problem](#the-problem)
-  - [Installation](#installation)
-  - [Usage](#usage)
-    - [Configuration Structure](#configuration-structure)
-    - [Basic Frontmatter Validation](#basic-frontmatter-validation)
-    - [Advanced Field Validation](#advanced-field-validation)
-    - [Frontmatter Check as a Python package](#frontmatter-check-as-a-python-package)
-    - [Frontmatter Check as a cli](#frontmatter-check-as-a-cli)
-    - [Frontmatter Check with Pre-Commit](#frontmatter-check-with-pre-commit)
-  - [Development](#development) - [Code of Conduct](#code-of-conduct) - [Contributing](#contributing) - [Security](#security)
-  <!--toc:end-->
+![Frontmatter Check Logo](./assets/images/frontmatter-check-logo.jpeg)
 
 ## Overview
 
-This validation system ensures the presence and format of frontmatter fields in your content files. It ensures that required metadata is present.
+It ensures that required metadata is present in your Markdown files.
 
 ## The Problem
 
-[Markdown][markdown] is incredibly flexible (you're reading it now!) and [frontmatter][frontmatter] adds even more flexibility. That said there is no built-in validation and any issues in your configuration can result in websites, docs, and content not appearing as expected.
+[Markdown][markdown] is incredibly flexible (you're reading it now!) and [frontmatter][frontmatter] adds even more flexibility. That said, there is no built-in validation, and any issues in your configuration can result in websites, docs, and content not appearing as expected.
 
-We can't do much about the validation but we ensure that you include the frontmatter metadata that your application expects.
+We can't do much about the validation, but we can ensure that you have included all the frontmatter metadata that your application expects.
 
 ## Installation
 
 You can install this package via pip:
 
 ```shell
-pip install https://git@github.com:kjaymiller/frontmatter-check.git
+pip install --pre https://git@github.com:kjaymiller/frontmatter-check.git
 ```
 
-## Usage
+## Using the CLI
 
-### Configuration Structure
+The most common usage for this tool would be to use the CLI.
 
-Let's look at a simple markdown document with some frontmatter
+Let's look at a simple markdown document with some frontmatter.
 
 ```markdown
 ---
@@ -48,85 +34,105 @@ title: Hello World
 This is a sample blog post
 ```
 
-### Basic Frontmatter Validation
+### Configuration Structure
 
-The simplest configuration checks for the presence of a required frontmatter field:
+To use Frontmatter Check, you need to pass in a configuration file. This is a yaml file that you can point to directly with a CLI command.
 
-```yaml
-# FRONTMATTER_CHECK_CONFIG.YAML
-
-title:
-```
-
-This configuration ensures that the frontmatter contains a `title` field.
-
-What if our blog occaisionally has guest posts and we want to make sure that an `author` flag is always included. We can add another entry to our config.
+The simplest configuration contains a pattern:
 
 ```yaml
-# FRONTMATTER_CHECK_CONFIG.YAML
+# .frontmatter_check.YAML
 
-title:
-author:
+# Pattern-specific rules
+patterns:
+  - name: "Global Defaults"
+    pattern: "**/*.md" # match ALL `.md` files
+    rules:
+      - field_name: title
+      - field_name: description
 ```
 
-### Advanced Field Validation
+The `pattern` field will be checked against the file path. Paths are relative to where the CLI is ran.
 
-Fields can have additional properties. The `default` flag that supplies a default value when one is missing. The other value is the `warning` flag that will let you know that something you've mentioned should be included is missing.
+- `*` wildcard
+- `**/` recursive wildcard
 
-```yaml
-# FRONTMATTER_CHECK_CONFIG.YAML
-name:
-  default: Jay Miller # Default value if field is missing
-  warning: true # Show warning instead of failing pre-commit
-```
+The example above will pass for ALL markdown files.
 
-### Frontmatter Check as a Python package
+### Check your frontmatter files
 
-Using this as a package means that you can validate your frontmatter at runtime.
-
-#### 1. Import the `FrontmatterValidator` object
-
-```python
-from frontmatter-check import FrontmatterValidator
-```
-
-#### 2. Initialize your `FrontmatterValidator`
-
-This will look for a configuration file. If your file is at `.frontmatter_check_config.yaml` or the filename in the `FRONTMATTER_CHECK_CONFIG` environment variable it will be autodetected (environment variable takes priority). You can also pass in a `config_file` as a `pathlib.Path` as well.
-
-```Python
-validator = FrontmatterValidator() # optional config_file = <YOUR_CONFIG.YAML>
-```
-
-#### 3. [Optional] Add any additional rules
-
-Rules are kept in the `ruleset` attribute. Rules are a dictionary where the key is the `frontmatter_key` to check with the `default` and `warning` attributes as dictionary values.
-
-```Python
-validator.ruleset['newrule'] = {
-  # These are required if adding them outside the configuration
-  "default": None,
-  "warning: False"
-}
-```
-
-#### 4. Check a frontmatter contained file with `validates`
-
-`validator` looks for a [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path). While normally frontmatter is often paired with markdown. You can pass any filetype. Files with no frontmatter will be skipped.
-
-### Frontmatter Check as a cli
-
-Frontmatter Uses [typer](https://typer.tiangolo.com) to check files.
-
-You can access the cli with the `frontmatter-check` command. You can pass in as many files to check as arguments and the optional config-file (obeys the same rules as in a [python package](#frontmatter-check-as-a-python-package)).
+Test a frontmatter file running the command:
 
 ```shell
-frontmatter-check <FILE1> <FILE2> <etc> --config-file <OPTIONAL_CONFIG_FILE>
+frontmatter-check pages/sample_markdown_file.md
+
+Checking File: pages/sample_markdown_file.md
+ERROR - Missing field: 'description'
 ```
 
-You can pass in `frontmatter-check` with no arguments or `frontmatter-check --help` to access the help.
+### CLI Advanced Usage Field Validation
 
-### Frontmatter Check with Pre-Commit
+#### Modifying check levels
+
+Each rule has two checks:
+
+- `is_missing`: Does the field exist?
+- `is_null`: Is the value of the field `null`
+
+If either of the checks fail **FOR ANY RULE**, the command-line will continue to run but will exit after all tests have run. Failures will result in an exit code of `1`.
+
+You can change the level of each check.
+
+If you set the value of a check to `warn`. The Error message will still appear but the check will not affect the exit code.
+
+Setting a check to `skip` will suppress the message and not affect the exit code.
+
+```yaml
+# .frontmatter_check.YAML
+
+# Pattern-specific rules
+patterns:
+  - name: "Global Defaults"
+    pattern: "**/*.md" # Careful this will hit ALL markdown files
+    rules:
+      - field_name: title
+        is_missing: skip # do not raise an error
+      - field_name: description
+        is_null: warn # show error but do not fail the check
+```
+
+#### Matching multiple rules
+
+You can have as many patterns as you like but rules will run for each matching pattern.
+
+Since Frontmatter Check will test all matching patterns, there is no difference in order.
+
+> [!NOTE]
+> There is a plan to implement a `fail_fast` setting that would make order more important
+
+#### Calling multiple files
+
+You can also pass an a directory and it will match all the markdown (_.md) and text (_.txt) files. You can modify the pattern to check with `--file_pattern`.
+
+```shell
+frontmatter-check pages --file-pattern *.md
+
+Checking File: pages/sample_markdown_file.md
+ERROR - Missing field: 'description'
+```
+
+You can also be more specific and pass in multiple files and folders:
+
+```shell
+frontmatter-check pages another_file.md --file-pattern pages/blog/*.md
+
+Checking File: pages/sample_markdown_file.md
+ERROR - Missing field: 'description'
+
+Checking File: pages/sample_markdown_file.md
+```
+
+## Frontmatter Check with Pre-Commit
 
 Arguably the most convenient way to use Frontmatter Check is with [pre-commit](https://github.com/pre-commit/pre-commit).
 
@@ -135,11 +141,85 @@ Add the following to your `.pre_commit_config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/kjaymiller/frontmatter-check
-    rev: "2024.11.3"
+    rev: "2025.1.1a2"
     hooks:
       - id: frontmatter-check
       # - args: [--config-file <OPTIONAL_CONFIG_FILE>]
 ```
+
+## Frontmatter Check as a Python package
+
+Using this as a package means that you can validate your frontmatter at runtime.
+
+### Simple rule validation letters
+
+For checking for a few fields, you can use the `ValidationRule` and the `RulesetValidator`. This is great when the data being checked it pretty consistent.
+
+A single field is identified in a `ValidationRule`.
+
+You can bundle `ValidationRule`s into a `RulesetValidator`. You can then validate your rules using `RulesetValidator.validate(frontmatter_metadata)`.
+
+> [!NOTE]
+> Since you are checking only the metadata of the frontmatter, it is expected that you pass in the metadata and not the file itself.
+
+```python
+from frontmatter import ValidationRule, RulesetValidator
+
+title = ValidationRule(field_name="title")
+description = ValidationRule(field_name="description")
+
+RulesetValidator(rules=[title, description])
+```
+
+### Advances rule validation letters
+
+```python
+from frontmatter_check import  PatternRuleset
+
+rule_set = PatternRuleset(field_name="title") # you can also pass
+```
+
+There are parallels between the CLI and the Python package (because the CLI uses the packages behind the scenes).
+
+This means that you can use the serialized version of your config for patterns and pass it using the `to_dict` classmethod.
+
+```py
+ruleset_config = {
+        "name": "Docs"
+        "pattern": "docs/*.md"
+        "rules": [
+                {
+                    "field_name": "title",
+                    "level": "error",
+                },
+                {
+                    "field_name": "author",
+                    "level": "error",
+                },
+        ],
+    }
+
+rule_set = PatternRuleset.from_dict(ruleset_config)
+```
+
+You can match multiple `PatternRuleset`s to a `FrontmatterPatternMatchCheck` object.
+
+```python
+from frontmatter_check import PatternRuleset, FrontmatterPatternMatchCheck
+
+rule_set = PatternRuleset(pattern="**/*.md", field_name="title")
+pattern_check = FrontmatterPatternMatchCheck(rule_set, ...) # you can pass in multiple rule_sets
+```
+
+You can also pass a yaml file.
+
+```python
+from frontmatter_check import FrontmatterPatternMatchCheck
+
+pattern_check = FrontmatterPatternMatchCheck.from_yaml_config(config_file=YAML_CONFIG_FILE_PATH)
+```
+
+This will check against the pattern.
 
 ## Development
 
@@ -149,7 +229,7 @@ By contributing to this project, you agree to abide by the [CODE of CONDUCT](htt
 
 ### Contributing
 
-Please checkout [CONTRIBUTING.md](CONTRIBUTING.md) prior to suggesting contributions.
+Please check out [CONTRIBUTING.md](CONTRIBUTING.md) prior to suggesting contributions.
 
 ### Security
 
