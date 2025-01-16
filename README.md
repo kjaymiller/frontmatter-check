@@ -96,6 +96,7 @@ patterns:
     pattern: "**/*.md" # Careful this will hit ALL markdown files
     rules:
       - field_name: title
+        case_sensitivity: false # Key == key == kEy
         is_missing: skip # do not raise an error
       - field_name: description
         is_null: warn # show error but do not fail the check

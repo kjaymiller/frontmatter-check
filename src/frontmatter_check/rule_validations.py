@@ -16,15 +16,33 @@ class ValidationRule:
     """A Single Validation Rule Configuration"""
 
     field_name: str
+    case_sensitivity: bool = False
     default: str | None = None
     # the `int`s below are due to being able to change your logging level values
     missing_field_logging_level: int = logging.ERROR
     null_value_logging_level: int = logging.ERROR
 
+    @property
+    def _checkable_field_name(self):
+        if not self.case_sensitivity:
+            return self.field_name.casefold()
+        return self.field_name
+
+    def _checkable_metadata(self, frontmatter_metadata: dict) -> dict:
+        if not self.case_sensitivity:
+            return {
+                x.casefold(): y
+                for x, y in frontmatter_metadata.items()
+                if not self.case_sensitivity
+            }
+        return frontmatter_metadata
+
     def has_field(self, frontmatter_metadata: _frontmatter_metadata):
         """Checks that the frontmatter_matadata has the field"""
 
-        if self.field_name not in frontmatter_metadata:
+        if self._checkable_field_name not in self._checkable_metadata(
+            frontmatter_metadata
+        ):
             fail_message = f"Missing field: '{self.field_name}'"
             logger.log(
                 self.missing_field_logging_level,
