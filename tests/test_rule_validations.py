@@ -205,6 +205,7 @@ def test_validationrule_case_sensitivity():
     case_insensitve_rule = ValidationRule(field_name="Test", case_sensitivity=False)
     assert not case_sensitive_rule.has_field(frontmatter_metadata=test_metadata)
     assert case_insensitve_rule.has_field(frontmatter_metadata=test_metadata)
+    assert case_insensitve_rule.null_value(frontmatter_metadata=test_metadata)
 
 
 @given(ruleset_data=generate_ruleset_data())

@@ -55,10 +55,17 @@ class ValidationRule:
     def null_value(self, frontmatter_metadata: _frontmatter_metadata):
         """Checks that field value is not None"""
 
-        if frontmatter_metadata.get(self.field_name) is None:
+        if (
+            self._checkable_metadata(frontmatter_metadata).get(
+                self._checkable_field_name
+            )
+            is None
+        ):
             fail_message = f"{self.field_name} Value is 'Null'"
             logger.log(self.null_value_logging_level, fail_message)
             return False
+
+        return True
 
     def check(self, frontmatter_metadata: _frontmatter_metadata):
         if not self.has_field(frontmatter_metadata):
