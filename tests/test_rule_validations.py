@@ -197,6 +197,16 @@ def test_validates_with_missing_fields():
     ]
 
 
+def test_validationrule_case_sensitivity():
+    """Tests that case_sensitivity in ValidationRule"""
+
+    test_metadata = {"test": "foo"}
+    case_sensitive_rule = ValidationRule(field_name="Test", case_sensitivity=True)
+    case_insensitve_rule = ValidationRule(field_name="Test", case_sensitivity=False)
+    assert not case_sensitive_rule.has_field(frontmatter_metadata=test_metadata)
+    assert case_insensitve_rule.has_field(frontmatter_metadata=test_metadata)
+
+
 @given(ruleset_data=generate_ruleset_data())
 def test_validates_success(caplog, ruleset_data):
     """Test validation when all fields are present and valid"""
