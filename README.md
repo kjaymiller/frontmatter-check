@@ -142,7 +142,7 @@ Add the following to your `.pre_commit_config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/kjaymiller/frontmatter-check
-    rev: "2025.1.1b2"
+    rev: "2025.1.1b4"
     hooks:
       - id: frontmatter-check
       # - args: [--config-file <OPTIONAL_CONFIG_FILE>]
