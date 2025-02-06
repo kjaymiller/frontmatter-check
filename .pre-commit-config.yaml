@@ -24,3 +24,12 @@ repos:
       - id: markdownlint-cli2
         args: [--fix]
         exclude: tests/*
+  - repo: local
+    hooks:
+      - id: frontmatter-check
+        name: frontmatter check
+        description: checks md files frontmatter
+        entry: frontmatter-check
+        language: python
+        stages: [pre-commit, pre-push, manual]
+        types: [text]

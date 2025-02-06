@@ -143,10 +143,11 @@ class FrontmatterPatternMatchCheck:
             str(frontmatter_file.absolute())
         ).metadata
 
-        if not frontmatter_metadata:
-            raise ValueError("No Frontmatter Found for %s" % frontmatter_file)
-
         _validates = True
+
+        if not frontmatter_metadata:
+            logging.warning("No Frontmatter Found for %s" % frontmatter_file)
+            return _validates
 
         for pattern in self.pattern_sets:
             if _check_pattern(pattern, frontmatter_file):
