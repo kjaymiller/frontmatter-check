@@ -1,0 +1,6 @@
+patterns:
+  - name: "Global Defaults"
+    pattern: "**/*.md" # match ALL `.md` files
+    rules:
+      - field_name: title
+      - field_name: description
