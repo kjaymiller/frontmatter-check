@@ -17,7 +17,13 @@ We can't do much about the validation, but we can ensure that you have included 
 You can install this package via pip:
 
 ```shell
-pip install --pre https://git@github.com:kjaymiller/frontmatter-check.git
+pip install --pre https://git@github.com:kjaymiller/frontmatter-check.git@2025.1.1a2
+```
+
+You can also test the latest changes by swapping the version to `main`
+
+```shell
+pip install --pre https://git@github.com:kjaymiller/frontmatter-check.git@2025.1.1a2
 ```
 
 ## Using the CLI
