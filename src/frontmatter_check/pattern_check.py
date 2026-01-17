@@ -5,6 +5,7 @@ Pattern check is used to check against multiple patterns.
 import dataclasses
 import logging
 import pathlib
+import fnmatch
 
 import frontmatter
 import yaml
@@ -96,7 +97,10 @@ class PatternRuleset:
 
 
 def _check_pattern(pattern_ruleset: PatternRuleset, file_path: pathlib.Path):
-    return file_path.full_match(pattern_ruleset.pattern)
+    if hasattr(file_path, "full_match"):
+        return file_path.full_match(pattern_ruleset.pattern)
+
+    return fnmatch.fnmatch(str(file_path), pattern_ruleset.pattern)
 
 
 class FrontmatterPatternMatchCheck:
