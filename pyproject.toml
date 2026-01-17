@@ -17,7 +17,7 @@ dependencies = ["typer", "python-frontmatter", "pyyaml"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-dev = ["hypothesis", "pytest", "pytest-cov", "pytest-mock"]
+dev = ["hypothesis", "pytest", "pytest-cov", "pytest-mock", "nox"]
 
 [project.scripts]
 frontmatter-check = "frontmatter_check.cli:app"
