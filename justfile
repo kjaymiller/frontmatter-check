@@ -32,6 +32,14 @@ format:
 check:
     pre-commit run --all-files
 
+# Run all nox sessions
+nox:
+    nox
+
+# List available nox sessions
+nox-list:
+    nox --list
+
 # Clean build artifacts
 clean:
     rm -rf build/ dist/ *.egg-info .pytest_cache .ruff_cache .coverage
