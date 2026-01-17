@@ -42,12 +42,17 @@ def _to_validation_rule(rule: dict) -> ValidationRule:
     null_value_logging_level = convert_error_strings(
         rule.get("is_null", rule.get("level", logging.ERROR))
     )
+    invalid_type_logging_level = convert_error_strings(
+        rule.get("is_invalid_type", rule.get("level", logging.ERROR))
+    )
 
     return ValidationRule(
         field_name=rule.get("field_name", None),
         default=rule.get("default", None),
+        type=rule.get("type", None),
         missing_field_logging_level=missing_field_logging_level,
         null_value_logging_level=null_value_logging_level,
+        invalid_type_logging_level=invalid_type_logging_level,
     )
 
 
