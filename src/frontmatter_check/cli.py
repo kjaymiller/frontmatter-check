@@ -1,5 +1,6 @@
 import pathlib
 import logging
+import itertools
 
 from rich.console import Console
 from typer import Typer, Option, Exit, echo
@@ -41,10 +42,10 @@ def check_files(
 
     for target_file in target_files:
         if target_file.is_dir():
-            target_files = []
-            for pattern in file_pattern:
-                target_files.extend(list(target_file.glob(pattern)))
-            for _target_file in target_files:
+            files_to_check = itertools.chain.from_iterable(
+                target_file.glob(pattern) for pattern in file_pattern
+            )
+            for _target_file in files_to_check:
                 try:
                     check_result = _check_pattern(
                         pattern_check=pattern_check, target_file=_target_file

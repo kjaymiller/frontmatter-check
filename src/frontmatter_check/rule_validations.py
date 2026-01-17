@@ -4,6 +4,7 @@ The FrontmatterValidator is the object responsible for checking a passed in fron
 
 import logging
 import dataclasses
+import datetime
 from typing import Any
 
 from .logger import logger, memory_handler
@@ -18,9 +19,11 @@ class ValidationRule:
     field_name: str
     case_sensitivity: bool = False
     default: str | None = None
+    type: str | None = None
     # the `int`s below are due to being able to change your logging level values
     missing_field_logging_level: int = logging.ERROR
     null_value_logging_level: int = logging.ERROR
+    invalid_type_logging_level: int = logging.ERROR
 
     @property
     def _checkable_field_name(self):
@@ -67,10 +70,42 @@ class ValidationRule:
 
         return True
 
+    def validate_type(self, frontmatter_metadata: _frontmatter_metadata):
+        """Checks that field value is of the correct type"""
+
+        if not self.type:
+            return True
+
+        value = self._checkable_metadata(frontmatter_metadata).get(
+            self._checkable_field_name
+        )
+
+        if value is None:
+            return True
+
+        type_map = {
+            "str": str,
+            "int": int,
+            "bool": bool,
+            "list": list,
+            "dict": dict,
+            "datetime": (datetime.date, datetime.datetime),
+        }
+
+        expected_type = type_map.get(self.type.lower())
+
+        if expected_type and not isinstance(value, expected_type):
+            fail_message = f"{self.field_name} Value is not of type '{self.type}'"
+            logger.log(self.invalid_type_logging_level, fail_message)
+            return False
+
+        return True
+
     def check(self, frontmatter_metadata: _frontmatter_metadata):
         if not self.has_field(frontmatter_metadata):
             return
-        self.null_value(frontmatter_metadata)
+        if self.null_value(frontmatter_metadata):
+            self.validate_type(frontmatter_metadata)
 
 
 rules = list[ValidationRule]
